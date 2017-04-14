@@ -4,8 +4,8 @@ let Joi = require('joi');
 class ValidationSchemas {
 
     constructor() {
-        this._set();
-        this._setupUserUpdateSchema();
+        this._setupContactCreateSchema();
+        this._setupContactUpdateSchema();
     }
 
     get contactCreateSchema() {

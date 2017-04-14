@@ -35,7 +35,7 @@ class IndexResource {
         this._setupUpdateResource();
         this._setupDeleteResource();
         this._setupGetAllResource();
-        this._authService();
+        this._setupAuthResource();
     }
 
     get router() {
