@@ -24,7 +24,7 @@ class ContactService {
     }
 
     findById(id) {
-        return this.contactDAO.findById(id);
+        return this.contactDAO.contactById(id);
     }
 
     findByEmail(email) {

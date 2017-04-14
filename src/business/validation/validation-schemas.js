@@ -18,7 +18,7 @@ class ValidationSchemas {
 
     //User schema
     _setupContactCreateSchema() {
-        this._userSchema = Joi.object({
+        this._contactCreateSchema = Joi.object({
             name: Joi.string().required().min(2),
             email: Joi.string().email().required(),
             phoneNumber: Joi.string().regex(/[\\d{8,15}]/),
@@ -27,7 +27,7 @@ class ValidationSchemas {
     }
 
     _setupContactUpdateSchema() {
-        this._userUpdateSchema = Joi.object({
+        this._contactUpdateSchema = Joi.object({
             name: Joi.string().required().min(2),
             phoneNumber: Joi.string().regex(/[\\d{8,15}]/)
         });

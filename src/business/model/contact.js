@@ -17,6 +17,7 @@ class Contact {
             this.id = data.id;
             this.name = data.name;
             this.email = data.email;
+            this.createdAt = data.createdAt;
             this.phoneNumber = data.phoneNumber;
             this.password = data.password;
         }
@@ -78,6 +79,7 @@ class Contact {
                 obj[newKey] = this[newKey];
             }
         });
+        delete obj.password;
         return obj;
     }
 }

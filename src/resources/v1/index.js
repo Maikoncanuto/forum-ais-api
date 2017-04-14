@@ -81,7 +81,8 @@ class IndexResource {
                     } else {
                         res.status(404).send({ message: 'Contact not found' });
                     }
-                }).catch(() => {
+                }).catch((error) => {
+                    console.error(error);
                     this._internalErrorResponse(res);
                 });
             });
@@ -93,20 +94,21 @@ class IndexResource {
             Validator.validateIntegerParam('contactId'),
             (req, res) => {
                 let contact = new Contact({ id: parseInt(req.params.contactId) });
-                this.contactService.delete(contact).then((updatedContact) => {
-                    if (updatedContact) {
-                        res.send(updatedContact.asObject());
+                this.contactService.delete(contact).then((deletedContact) => {
+                    if (deletedContact) {
+                        res.send(deletedContact.asObject());
                     } else {
                         res.status(404).send({ message: 'Contact not found' });
                     }
-                }).catch(() => {
+                }).catch((error) => {
+                    console.error(error);
                     this._internalErrorResponse(res);
                 });
             });
     }
 
     _setupGetById() {
-        this.get('/:contactId',
+        this.router.get('/:contactId',
             passport.authenticate('bearer', { session: false }),
             Validator.validateIntegerParam('contactId'),
             (req, res) => {

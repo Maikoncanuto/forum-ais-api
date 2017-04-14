@@ -15,6 +15,7 @@ class ContactDAO {
                     return reject(error);
                 } else {
                     contact.password = hash;
+                    contact.createdAt = new Date();
                     this._save(contact).then((createdContact) => {
                         resolve(createdContact);
                     }).catch((error) => {
@@ -27,17 +28,20 @@ class ContactDAO {
 
     update(contact) {
         return new Promise((resolve, reject) => {
-            if (contact.id) {
+            if (_.isInteger(contact.id)) {
                 this.contactById(contact.id)
                     .then((foundContact) => {
                         if (foundContact) {
                             foundContact.name = contact.name;
                             foundContact.phoneNumber = contact.phoneNumber;
-                            this._save(foundContact).then((updatedContact) => {
-                                resolve(updatedContact);
-                            }).catch((error) => {
-                                reject(error);
-                            });
+                            db.save(ContactDTO.asDocument(foundContact),
+                                (error, node) => {
+                                    if (error) {
+                                        reject(error);
+                                    } else {
+                                        resolve(ContactDTO.asContact(node));
+                                    }
+                                });
                         } else {
                             resolve(null);
                         }
@@ -52,17 +56,21 @@ class ContactDAO {
 
     delete(contact) {
         return new Promise((resolve, reject) => {
-            if (contact.id) {
-                db.delete(contact.id, (error, deletedNode) => {
-                    if (error) {
-                        reject(error);
+            if (_.isInteger(contact.id)) {
+                this.contactById(contact.id).then((foundContact) => {
+                    if (foundContact) {
+                        db.delete(foundContact.id, (error) => {
+                            if (error) {
+                                reject(error);
+                            } else {
+                                resolve(foundContact);
+                            }
+                        });
                     } else {
-                        if (deletedNode) {
-                            resolve(ContactDTO.asContact(deletedNode));
-                        } else {
-                            resolve(null);
-                        }
+                        resolve(null);
                     }
+                }).catch((error) => {
+                    reject(error);
                 });
             } else {
                 reject(new Error('Contact must have an id to be deleted'));
@@ -86,15 +94,19 @@ class ContactDAO {
         });
     }
 
-    contactById(userId) {
+    contactById(contactId) {
         return new Promise((resolve, reject) => {
-            db.read({ id: userId }, (error, node) => {
+            let cypher = `MATCH (c: Contact) WHERE ID(c)=${contactId} RETURN c`;
+            db.query(cypher, (error, result) => {
                 if (error) {
                     reject(error);
-                } else if (node) {
-                    resolve(ContactDTO.asContact(node));
                 } else {
-                    resolve(null);
+                    if (_.isEmpty(result)) {
+                        resolve(null);
+                    } else {
+                        let node = _.first(result);
+                        resolve(ContactDTO.asContact(node));
+                    }
                 }
             });
         });
@@ -116,16 +128,16 @@ class ContactDAO {
         });
     }
 
-    _save(user) {
+    _save(contact) {
         return new Promise((resolve, reject) => {
-            user.registeredAt = new Date();
-            db.save(ContactDTO.asDocument(user), 'Contact', (error, node) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(ContactDTO.asContact(node));
-                }
-            });
+            db.save(ContactDTO.asDocument(contact), 'Contact',
+                (error, node) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(ContactDTO.asContact(node));
+                    }
+                });
         });
     }
 

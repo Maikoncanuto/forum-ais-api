@@ -17,7 +17,7 @@ class ContactDTO {
 
     static asContact(document) {
         return new Contact({
-            id: document._id,
+            id: document.id,
             name: document.name,
             email: document.email,
             createdAt: document.createdAt,
