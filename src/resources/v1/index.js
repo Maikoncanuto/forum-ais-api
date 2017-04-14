@@ -35,6 +35,7 @@ class IndexResource {
         this._setupUpdateResource();
         this._setupDeleteResource();
         this._setupGetAllResource();
+        this._setupGetById();
         this._setupAuthResource();
     }
 
@@ -46,10 +47,10 @@ class IndexResource {
         this.router.post('/',
             Validator.validate(this.validationSchemas.contactCreateSchema),
             (req, res, next) => {
-                this.contactService.findByEmail(req.body.email).then((contact)=> {
-                    if(contact) {
-                        res.status(400).send({message: `e-mail ${req.body.email} is already registered`});
-                    }else {
+                this.contactService.findByEmail(req.body.email).then((contact) => {
+                    if (contact) {
+                        res.status(400).send({ message: `e-mail ${req.body.email} is already registered` });
+                    } else {
                         next();
                     }
                 }).catch(() => {
@@ -97,6 +98,23 @@ class IndexResource {
                         res.send(updatedContact.asObject());
                     } else {
                         res.status(404).send({ message: 'Contact not found' });
+                    }
+                }).catch(() => {
+                    this._internalErrorResponse(res);
+                });
+            });
+    }
+
+    _setupGetById() {
+        this.get('/:contactId',
+            passport.authenticate('bearer', { session: false }),
+            Validator.validateIntegerParam('contactId'),
+            (req, res) => {
+                this.contactService.findById(parseInt(req.params.contactId)).then((foundContact) => {
+                    if (foundContact) {
+                        res.send(foundContact.asObject());
+                    } else {
+                        res.status(404).send();
                     }
                 }).catch(() => {
                     this._internalErrorResponse(res);
