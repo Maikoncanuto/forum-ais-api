@@ -1,19 +1,21 @@
 version: '2'
 services: 
     application: 
-        container_name: template-api
+        container_name: forum-api
         build: .
         networks: 
-            - template
+            - forum
         depends_on:
-            - mongo
+            - neo4j
         env_file: variables.env
         ports:
             - "3000:3000"
-    mongo:
-        container_name: mongo
-        image: mongo:latest
+    neo4j:
+        container_name: neo4j
+        image: neo4j:3.1.0        
         networks: 
-            - template
+            - forum
+        ports:
+            - "7474:7474"
 networks: 
     template:
