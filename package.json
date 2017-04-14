@@ -24,7 +24,6 @@
     "joi": "^9.2.0",
     "jsonwebtoken": "^7.1.9",
     "passport": "~0.3.2",
-    "passport-facebook": "^2.1.1",
     "passport-http-bearer": "^1.0.1",
     "bcrypt-nodejs": "0.0.3"
   },

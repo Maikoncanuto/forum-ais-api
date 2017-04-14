@@ -4,6 +4,8 @@ const ContactService = require('./contact-service');
 const _ = require('lodash');
 const bcrypt = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
+const BearerStrategy = require('passport-http-bearer');
 
 class AuthService {
 
@@ -44,6 +46,19 @@ class AuthService {
                 reject(new Error('The email and password are required and must strings'));
             }
         });
+    }
+
+    static config() {
+        passport.use(new BearerStrategy((token, done) => {
+            jwt.verify(token, process.env.JWT_SECRET, (error) => {
+                if (error) {
+                    done(null, false);
+                } else {
+                    let decoded = jwt.decode(token, { complete: true });
+                    done(null, decoded.payload, { scope: 'all' });
+                }
+            });
+        }));
     }
 }
 
