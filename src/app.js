@@ -19,8 +19,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-let v1 = express.Router();
+const v1 = express.Router();
+v1.use(function (req, res , next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,PATCH,POST,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,token, Authorization, email, password');
+    next();
+});
+
 v1.use('/contacts', new IndexResouce().router);
+
 
 app.use('/v1', v1);
 
